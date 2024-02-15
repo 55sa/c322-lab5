@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ducks Gallery</title>
+  <style>
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+      width: 20%;
+      border-radius: 5px;
+      margin: 10px;
+      float: left;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    img {
+      width: 100%;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .container {
+      padding: 2px 16px;
+    }
+
+    /* Clear floats after the cards */
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  </style>
+</head>
+<body>
+
+<div id="ducks-container" class="clearfix">
+  <!-- Ducks will be added here dynamically -->
+</div>
+
+<script>
+// Function to create a card for each duck
+function createDuckCard(duck) {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const img = document.createElement('img');
+  img.src = `http://localhost:8082/ducks/${duck.id}/image`;
+  img.alt = duck.name;
+  img.style = 'width:100%';
+
+  const container = document.createElement('div');
+  container.className = 'container';
+
+  const title = document.createElement('h4');
+  title.innerHTML = `<b>${duck.id}</b>`;
+
+  const description = document.createElement('p');
+  description.textContent = duck.type;
+
+  container.appendChild(title);
+  container.appendChild(description);
+  card.appendChild(img);
+  card.appendChild(container);
+
+  return card;
+}
+
+// Function to fetch ducks from the backend and add them to the page
+async function loadDucks() {
+  try {
+    const response = await fetch('http://localhost:8082/ducks');
+    const ducks = await response.json();
+    const ducksContainer = document.getElementById('ducks-container');
+    
+    ducks.forEach(duck => {
+      const duckCard = createDuckCard(duck);
+      ducksContainer.appendChild(duckCard);
+    });
+  } catch (error) {
+    console.error('Error fetching duck data:', error);
+  }
+}
+
+// Call loadDucks when the page loads
+window.addEventListener('DOMContentLoaded', loadDucks);
+</script>
+
+</body>
+</html>
